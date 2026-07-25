@@ -93,3 +93,24 @@ def test_maybe_generate_skips_write_when_config_disabled(tmp_path: Path) -> None
 
     fake_write.assert_not_called()
     assert not (tmp_path / ".claude" / "CLAUDE.md").exists()
+
+
+def test_write_project_files_skips_mcp_json_when_disabled(tmp_path: Path) -> None:
+    """--no-mcp-json must skip the root .mcp.json write independently of
+    CLAUDE.md, which has its own project_file_id."""
+
+    claude_integration.ClaudeCodeSetup().write_project_files(
+        _silent_console(),
+        tmp_path,
+        EditorSetupOptions(disabled_project_files=frozenset({"mcp_json"})),
+    )
+
+    assert not (tmp_path / ".mcp.json").exists()
+
+
+def test_write_project_files_writes_mcp_json_by_default(tmp_path: Path) -> None:
+    claude_integration.ClaudeCodeSetup().write_project_files(
+        _silent_console(), tmp_path, EditorSetupOptions()
+    )
+
+    assert (tmp_path / ".mcp.json").exists()

@@ -573,6 +573,8 @@ def _workspace_init(
     commit_limit: int | None,
     follow_renames: bool,
     no_claude_md: bool,
+    no_mcp_json: bool = False,
+    no_vscode: bool = False,
     agents_md: bool | None,
     codex_setup: bool | None,
     distill_hook: bool | None,
@@ -770,6 +772,8 @@ def _workspace_init(
     editor_options = resolve_editor_setup_options(
         disabled_project_files=get_default_disabled_project_files(
             no_claude_md=no_claude_md,
+            no_mcp_json=no_mcp_json,
+            no_vscode=no_vscode,
         ),
         project_file_overrides=get_default_project_file_overrides(
             agents_md=agents_md,

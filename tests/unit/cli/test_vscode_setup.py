@@ -249,3 +249,39 @@ def test_vscode_setup_writes_nothing_when_its_project_file_is_disabled(tmp_path:
         EditorSetupOptions(disabled_project_files=frozenset({"vscode_mcp"})),
     )
     assert not (tmp_path / ".vscode").exists()
+
+
+# ---------------------------------------------------------------------------
+# --no-vscode persistence (opt-out must survive `repowise update`)
+# ---------------------------------------------------------------------------
+
+
+def test_vscode_setup_persists_opt_out_to_config(tmp_path: Path) -> None:
+    """When the project file is disabled at write time, the opt-out is saved
+    to .repowise/config.yaml so a later `repowise update` (which builds a
+    fresh, non-disabled EditorSetupOptions) does not resurrect .vscode/*."""
+
+    VSCodeSetup().write_project_files(
+        _silent_console(),
+        tmp_path,
+        EditorSetupOptions(disabled_project_files=frozenset({"vscode_mcp"})),
+    )
+
+    cfg_path = tmp_path / ".repowise" / "config.yaml"
+    assert cfg_path.exists()
+    assert "vscode: false" in cfg_path.read_text(encoding="utf-8")
+
+
+def test_vscode_setup_refresh_respects_persisted_opt_out(tmp_path: Path) -> None:
+    """A prior opt-out recorded in config.yaml must stick across `update`,
+    even though `update` calls refresh with a fresh EditorSetupOptions()
+    that doesn't itself carry the disabled id."""
+
+    (tmp_path / ".repowise").mkdir()
+    (tmp_path / ".repowise" / "config.yaml").write_text(
+        "editor_files:\n  vscode: false\n", encoding="utf-8"
+    )
+
+    VSCodeSetup().refresh_project_files(_silent_console(), tmp_path, EditorSetupOptions())
+
+    assert not (tmp_path / ".vscode").exists()

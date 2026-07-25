@@ -52,12 +52,21 @@ def get_default_editor_integrations() -> tuple[InstallLifecycle, ...]:
     return (ClaudeCodeSetup(), CodexSetup(), VSCodeSetup())
 
 
-def get_default_disabled_project_files(*, no_claude_md: bool = False) -> tuple[str, ...]:
+def get_default_disabled_project_files(
+    *,
+    no_claude_md: bool = False,
+    no_mcp_json: bool = False,
+    no_vscode: bool = False,
+) -> tuple[str, ...]:
     """Map legacy CLI editor-file flags to integration-owned project file ids."""
 
     disabled: list[str] = []
     if no_claude_md:
         disabled.append(_project_file_id("claude-code"))
+    if no_mcp_json:
+        disabled.append(ClaudeCodeSetup.mcp_json_file_id)
+    if no_vscode:
+        disabled.append(VSCodeSetup.project_file_id)
     return tuple(disabled)
 
 

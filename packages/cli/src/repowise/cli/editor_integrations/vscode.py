@@ -28,6 +28,7 @@ class VSCodeSetup:
         options: EditorSetupOptions,
     ) -> list[Path]:
         if self.project_file_id in options.disabled_project_files:
+            _persist_vscode_disabled(repo_path)
             return []
         return _write_vscode_files(console_obj, repo_path)
 
@@ -44,7 +45,38 @@ class VSCodeSetup:
     ) -> None:
         if self.project_file_id in options.disabled_project_files:
             return
+        if not _vscode_enabled(repo_path):
+            return
         _write_vscode_files(console_obj, repo_path)
+
+
+def _vscode_enabled(repo_path: Path) -> bool:
+    from repowise.cli.helpers import load_config
+
+    cfg = load_config(repo_path)
+    return bool(cfg.get("editor_files", {}).get("vscode", True))
+
+
+def _persist_vscode_disabled(repo_path: Path) -> None:
+    """Persist the opt-out so 'repowise update' doesn't resurrect .vscode/*."""
+
+    from repowise.cli.helpers import load_config
+
+    cfg = load_config(repo_path)
+    ef_cfg = dict(cfg.get("editor_files", {}))
+    ef_cfg["vscode"] = False
+    cfg["editor_files"] = ef_cfg
+    try:
+        import yaml  # type: ignore[import-untyped]
+
+        cfg_path = repo_path / ".repowise" / "config.yaml"
+        cfg_path.parent.mkdir(parents=True, exist_ok=True)
+        cfg_path.write_text(
+            yaml.dump(cfg, default_flow_style=False, sort_keys=False),
+            encoding="utf-8",
+        )
+    except ImportError:
+        pass
 
 
 def _write_vscode_files(console_obj: Any, repo_path: Path) -> list[Path]:

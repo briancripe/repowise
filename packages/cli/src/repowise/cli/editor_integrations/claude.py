@@ -22,6 +22,7 @@ class ClaudeCodeSetup:
     #: Read from the descriptor rather than restated, so the ids have one home.
     integration_id = claude_target.ID
     project_file_id = claude_target.PROJECT_FILE_ID
+    mcp_json_file_id = claude_target.MCP_JSON_FILE_ID
 
     def write_project_files(
         self,
@@ -31,7 +32,9 @@ class ClaudeCodeSetup:
     ) -> list[Path]:
         from repowise.cli.mcp_config import save_root_mcp_config
 
-        written = [Path(save_root_mcp_config(repo_path))]
+        written: list[Path] = []
+        if self.mcp_json_file_id not in options.disabled_project_files:
+            written.append(Path(save_root_mcp_config(repo_path)))
         claude_md = maybe_generate_claude_md(
             console_obj,
             repo_path,

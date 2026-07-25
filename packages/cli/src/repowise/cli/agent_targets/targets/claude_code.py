@@ -53,6 +53,11 @@ PLUGIN_KEY = "repowise@repowise"
 #: mapping can look it up rather than restate it per agent.
 PROJECT_FILE_ID = "claude_md"
 
+#: Config key for the repo-root ``.mcp.json`` this agent writes. Separate from
+#: PROJECT_FILE_ID so ``--no-mcp-json`` can disable the MCP registration file
+#: without also disabling CLAUDE.md, and vice versa.
+MCP_JSON_FILE_ID = "mcp_json"
+
 METHODS = (
     InstallMethod(
         id="plugin",

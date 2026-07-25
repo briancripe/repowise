@@ -515,6 +515,20 @@ def _run_generation_phase(
     help="Skip generating CLAUDE.md. Saves 'editor_files.claude_md: false' to config.",
 )
 @click.option(
+    "--no-mcp-json",
+    "no_mcp_json",
+    is_flag=True,
+    default=False,
+    help="Skip writing the project-local .mcp.json (Claude Code MCP config).",
+)
+@click.option(
+    "--no-vscode",
+    "no_vscode",
+    is_flag=True,
+    default=False,
+    help="Skip writing .vscode/mcp.json and .vscode/extensions.json.",
+)
+@click.option(
     "--agents/--no-agents",
     "agents_md",
     default=None,
@@ -716,6 +730,8 @@ def init_command(
     commit_limit: int | None,
     follow_renames: bool,
     no_claude_md: bool,
+    no_mcp_json: bool,
+    no_vscode: bool,
     seed_from: str | None,
     no_seed: bool,
     agents_md: bool | None,
@@ -864,6 +880,8 @@ def init_command(
             commit_limit=commit_limit,
             follow_renames=follow_renames,
             no_claude_md=no_claude_md,
+            no_mcp_json=no_mcp_json,
+            no_vscode=no_vscode,
             agents_md=agents_md,
             codex_setup=codex_setup,
             distill_hook=distill_hook,
@@ -1058,6 +1076,8 @@ def init_command(
     editor_options = resolve_editor_setup_options(
         disabled_project_files=get_default_disabled_project_files(
             no_claude_md=no_claude_md,
+            no_mcp_json=no_mcp_json,
+            no_vscode=no_vscode,
         ),
         project_file_overrides=get_default_project_file_overrides(
             agents_md=agents_md,

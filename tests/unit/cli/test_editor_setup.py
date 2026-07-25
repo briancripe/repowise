@@ -531,6 +531,21 @@ def test_default_disabled_project_files_maps_legacy_no_claude_flag() -> None:
     assert get_default_disabled_project_files(no_claude_md=True) == ("claude_md",)
 
 
+def test_default_disabled_project_files_maps_no_mcp_json_flag() -> None:
+    assert get_default_disabled_project_files(no_mcp_json=True) == ("mcp_json",)
+
+
+def test_default_disabled_project_files_maps_no_vscode_flag() -> None:
+    assert get_default_disabled_project_files(no_vscode=True) == ("vscode_mcp",)
+
+
+def test_default_disabled_project_files_combines_all_three_flags() -> None:
+    disabled = get_default_disabled_project_files(
+        no_claude_md=True, no_mcp_json=True, no_vscode=True
+    )
+    assert set(disabled) == {"claude_md", "mcp_json", "vscode_mcp"}
+
+
 def test_default_overrides_map_codex_flags_to_integration_ids() -> None:
     assert get_default_project_file_overrides() == {}
     assert get_default_project_file_overrides(agents_md=False) == {"agents_md": False}
