@@ -21,6 +21,7 @@ from unittest.mock import patch
 from rich.console import Console
 
 from repowise.cli.editor_integrations import claude as claude_integration
+from repowise.cli.editor_setup import EditorSetupOptions
 
 
 def _silent_console() -> Console:

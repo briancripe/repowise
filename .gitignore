@@ -121,3 +121,11 @@ ehthumbs.db
 
 # Claude Code
 .claude/
+
+# bd takes this lock in the HIVE ROOT, not under .beads/, so it dirties the main clone — and
+# `bh work merge` refuses to merge a dirty main clone. Untracked, that makes every merge in
+# this hive fail on a lock file the merge itself just created. Regenerable; never commit it.
+.beads.gate.lock
+
+# Beads working copy / exports — no issue data on GitHub
+.beads/*.jsonl
