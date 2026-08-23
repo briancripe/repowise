@@ -28,7 +28,7 @@ class VSCodeSetup:
         options: EditorSetupOptions,
     ) -> list[Path]:
         if self.project_file_id in options.disabled_project_files:
-            _persist_vscode_disabled(repo_path)
+            persist_vscode_disabled(repo_path)
             return []
         return _write_vscode_files(console_obj, repo_path)
 
@@ -57,8 +57,13 @@ def _vscode_enabled(repo_path: Path) -> bool:
     return bool(cfg.get("editor_files", {}).get("vscode", True))
 
 
-def _persist_vscode_disabled(repo_path: Path) -> None:
-    """Persist the opt-out so 'repowise update' doesn't resurrect .vscode/*."""
+def persist_vscode_disabled(repo_path: Path) -> None:
+    """Persist the opt-out so 'repowise update' doesn't resurrect .vscode/*.
+
+    Public because ``init``'s worktree-seed path returns early, before the
+    editor-setup pass that would otherwise record this, and has to persist the
+    opt-out itself before delegating to ``update``.
+    """
 
     from repowise.cli.helpers import load_config
 

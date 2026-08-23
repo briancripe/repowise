@@ -848,6 +848,18 @@ def init_command(
             )
             from repowise.cli.commands.update_cmd.command import run_update
 
+            # This path returns early, so the editor-setup pass that honors
+            # --no-vscode never runs for a seeded worktree. Record the opt-out
+            # in the worktree's (copied) config first, or the delegated update
+            # refreshes .vscode/* right back and the flag looks ignored.
+            if no_vscode:
+                from repowise.cli.editor_integrations.vscode import (
+                    persist_vscode_disabled,
+                )
+
+                for r in scan.repos:
+                    persist_vscode_disabled(r.path)
+
             is_workspace = len(scan.repos) > 1 and not no_workspace
 
             # Delegate to update
